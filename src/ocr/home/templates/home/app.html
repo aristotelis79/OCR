@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}My title:{% endblock %}
+
+{% block content %}
+<h1>OCR app</h1>
+<p class="{{msg_class}}">
+    {{message}}
+</p>
+
+<a href="{% url 'home' %}">Home</a>
+{% endblock %}
