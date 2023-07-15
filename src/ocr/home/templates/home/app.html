@@ -7,24 +7,29 @@
   <h1>InvOCR</h1>
 </div>
 <div class="container text-center">
-  <div class="row">
-    <div class="col">
       <div class="text-start">
         <h5>Add an invoice</h5>
       </div>
       <form method="post" enctype="multipart/form-data" onsubmit="openLoader()">
           {% csrf_token %}
-          <div class="mb-3">
+          <div class="row">
+          <div class="col-12 mb-5">
             <label for="invoice" class="form-label"></label>
-            <input class="form-control" placeholder="file input" type="file" name="invoice" accept=".jpg, .jpeg, .png"> 
+            <input class="form-control" placeholder="file input" type="file" name="invoice" accept=".jpg, .jpeg, .png" /> 
+            <input type="hidden" name="promt_keys" value="'αριθμός','σύνολο','πληρωτέο ποσό','αρ.παραστατικού','ημερομηνία','ΑΦΜ'" />
+            <input type="hidden" name="promt"
+              value="Attempt to find and extract the values form the indicators ({}) from the Greek text as comprehensively as possible, then provide the results in JSON format containing only the values" />
           </div>
-          <div class="mb-3">
+          <div class="row">
+          <div class="col-12 mb-5">
             <div class="form-floating">
               <textarea class="form-control" placeholder="Json date" name="extra_promts" style="height: 2em"></textarea>
               <label for="extra_promts" class="form-label">Add extra comma seperate fields to get values</label>
             </div>
           </div>
-          <div class="mb-3 text-end">
+        </div>
+        <div class="row">
+          <div class="col-12 mb-5 text-end">
             <button id="smbBtn" class="btn btn-success" type="submit">Submit</button>
             <div id="loadingModal" style="display: none;">
               <button type="button" class="btn btn-primary" disabled>
@@ -33,14 +38,17 @@
               </button>
             </div>
           </div>
+        </div>
       </form>
-      <div class="form-floating">
-        <textarea class="form-control" placeholder="Json date" name="json_data" style="height: 25em">{{ json_data|safe }}</textarea>
-        <label for="json_data" class="form-label">Result fields</label>
-      </div>
+      <div class="row">
+        <div class="col-12 mb-5">
+          <div class="form-floating">
+            <textarea class="form-control" placeholder="Json date" name="json_data" style="height: 25em">{{ json_data|safe }}</textarea>
+            <label for="json_data" class="form-label">Result fields</label>
+          </div>
+        </div>
+    </div>
       <!-- <a href="{% url 'home' %}">Home</a> -->
-    </div> 
-  </div> 
 </div> 
 <script>
     function openLoader() {

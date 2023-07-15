@@ -15,17 +15,14 @@ def home(request):
         img = cv2.imdecode(numpy.fromstring(request.FILES['invoice'].read(), numpy.uint8), cv2.IMREAD_GRAYSCALE)
         text = pytesseract.image_to_string(img, config= r'-l ell+eng --psm 6')
         
-        promt_keys = ['Αριθμος', 'Συνολο', 'ΑΦΜ, ''πληρωτεο Ποσο' , 'Αρ.Παραστατικού', 'Ημερομηνία']
+        promt_keys = request.POST.get('promt_keys')
         extra_promts = request.POST.get('extra_promts')
         if(extra_promts):
-            extra_promts.split(',')
-            promt_keys.extend(extra_promts)
+            promt_keys += ","+ extra_promts 
 
-
-        promt = "Find and write the values of indicators ({}) from the greek text and return only the json with the values"\
-                .format(", ".join("{}".format(value) for value in promt_keys))
+        promt = request.POST.get('promt').format(promt_keys)
         promt += "'" + text + "'"
-        response = bardapi.core.Bard(os.environ.get('__Secure-1PSID')).get_answer(promt)
+        response = bardapi.core.Bard(os.environ.get('BARD1PSID')).get_answer(promt)
 
         return render(request, "home/app.html", {'json_data': getJson(response['content'])})
     

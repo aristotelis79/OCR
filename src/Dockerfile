@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1
+
 FROM python:3
  
 RUN apt-get update && apt-get install -y \
@@ -8,17 +9,22 @@ libtesseract-dev libleptonica-dev pkg-config tesseract-ocr tesseract-ocr-grc tes
 apt-get clean && \
 rm -rf /var/lib/apt/lists/*
 
+ARG BARD1PSID
+ENV BARD1PSID=$BARD1PSID
 ENV PYTHONDONTWRITEBYTECODE=1
-
 ENV PYTHONUNBUFFERED=1
 
-EXPOSE 8000
 EXPOSE 5678
+EXPOSE 8000
 
 WORKDIR /app
 
 COPY requirements.txt /app
 
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt --no-cache-dir
 
 COPY . /app
+
+ENTRYPOINT ["python3"]
+
+CMD ["manage.py", "runserver", "0.0.0.0:8000"]

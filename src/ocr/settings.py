@@ -25,12 +25,19 @@ SECRET_KEY = 'django-insecure-c!&#s#9=naj))ia*64m)p%kq6)hf^#qt)736gi)!94k&_dlv(2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-# ALLOWED_HOSTS = [
-#     u'localhost',
-#     u'0.0.0.0',
-#     u'127.0.0.1',
-# ]
+ALLOWED_HOSTS = [
+    u'invocr.azurewebsites.net',
+    u'localhost',
+    u'0.0.0.0',
+    u'127.0.0.1',
+]
+
+CSRF_TRUSTED_ORIGINS = ['https://invocr.azurewebsites.net']
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_COOKIE_DOMAIN = 'invocr.azurewebsites.net'
 
 # Application definition
 
@@ -79,14 +86,14 @@ WSGI_APPLICATION = 'ocr.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql', 
-	    'NAME': os.environ.get('POSTGRES_NAME'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': 'db',
-        'PORT': 5432,
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql', 
+	#     'NAME': os.environ.get('POSTGRES_NAME'),
+    #     'USER': os.environ.get('POSTGRES_USER'),
+    #     'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+    #     'HOST': 'db',
+    #     'PORT': 5432,
+    # }
 }
 
 # Password validation
