@@ -3,7 +3,7 @@
 FROM python:3
  
 RUN apt-get update && apt-get install -y \
-libgl1 libgl1-mesa-glx ffmpeg libsm6 libxext6 libsm6 libfontconfig1 libxrender1 python3-opencv \
+libzbar0 libgl1 libgl1-mesa-glx ffmpeg libsm6 libxext6 libsm6 libfontconfig1 libxrender1 python3-opencv \
 libtesseract-dev libleptonica-dev pkg-config tesseract-ocr tesseract-ocr-grc tesseract-ocr-ell \
 && \
 apt-get clean && \
@@ -21,7 +21,7 @@ WORKDIR /app
 
 COPY requirements.txt /app
 
-RUN pip install -r requirements.txt --no-cache-dir
+RUN pip install -r requirements.txt
 
 COPY . /app
 

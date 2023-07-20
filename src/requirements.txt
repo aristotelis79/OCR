@@ -3,9 +3,8 @@ psycopg2
 debugpy
 opencv-python-headless
 opencv-python
-numpy
 opencv-contrib-python
-python-dotenv
+numpy
 pytesseract
-tesserocr
+qreader
 bardapi
