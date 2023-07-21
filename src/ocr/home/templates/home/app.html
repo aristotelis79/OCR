@@ -10,7 +10,7 @@
       <div class="text-start">
         <h5>Add an invoice</h5>
       </div>
-      <form method="post" enctype="multipart/form-data" onsubmit="openLoader()">
+      <form method="post" enctype="multipart/form-data" onsubmit="openLoader(this)">
           {% csrf_token %}
           <div class="row">
           <div class="col-12 mb-5">
@@ -30,7 +30,8 @@
         </div>
         <div class="row">
           <div class="col-12 mb-5 text-end">
-            <button id="smbBtn" class="btn btn-success" type="submit">Submit</button>
+            <button name="textreq" class="btn btn-success" type="submit">Text Recognize</button>
+            <button name= "qrcode" class="btn btn-success" type="submit">QRCode</button>
             <div id="loadingModal" style="display: none;">
               <button type="button" class="btn btn-primary" disabled>
                 <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
@@ -50,9 +51,10 @@
     </div>
 </div> 
 <script>
-    function openLoader() {
+    function openLoader(btn) {
+        document.getElementsByName("textreq")[0].style.display = "none";
+        document.getElementsByName("qrcode")[0].style.display = "none";
         document.getElementById("loadingModal").style.display = "block";
-        document.getElementById("smbBtn").style.display = "none";
       }
 </script>
 {% endblock %}

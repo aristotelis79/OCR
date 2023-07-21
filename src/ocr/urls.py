@@ -16,10 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from ocr.home.views import home, qrcode
+from ocr.home.views import home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    #path('', home, name='home')
-    path('', qrcode, name='home')
+    path('', home, name='home')
 ]
