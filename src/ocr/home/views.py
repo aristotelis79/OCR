@@ -2,13 +2,18 @@ import pytesseract
 import cv2
 import bardapi
 import re
-import os 
+import os
+import requests
 import numpy as np
+from urllib.parse import urlparse
+from urllib.parse import parse_qs
 from django.shortcuts import render
 from qrdet import QRDetector
 from qreader import QReader
 from revChatGPT.V1 import Chatbot
 #from PIL import Image
+
+AADE_BASE_QRCODE_URL = "https://appodixi.aade.gr/appodixiapps/QrCodesService/webresources/qrcode/ese_esi/"
 
 def home(request):
     if 'qrcode' in request.POST:
@@ -27,15 +32,17 @@ def qrcode(request):
 
     (x1, y1, x2, y2), confidence = detections[0]
     qr_image = image[y1:y2, x1:x2]
-        
-    # # Save the results
-    # cv2.imwrite(filename='1_b.jpg', img=qr_image)
 
     qreader = QReader()
     image = cv2.cvtColor(qr_image, cv2.COLOR_BGR2RGB)
     decoded_code = qreader.detect_and_decode(image=image)
+    
+    if len(decoded_code) is 0:
+        return render(request, "home/app.html", {'json_data': ''})
 
-    return render(request, "home/app.html", {'json_data': decoded_code})
+    urlParams = aadeParams(decoded_code[0])
+    json_data = requests.get(url = f"{AADE_BASE_QRCODE_URL}{urlParams[0]}/{urlParams[1]}/{urlParams[2]}", headers={'Accept': 'application/json'})
+    return render(request, "home/app.html", {'json_data': json_data.text}) 
 
 def textreq(request):
     if request.method != 'POST' or request.FILES.get('invoice', None) is None :
@@ -67,13 +74,17 @@ def chatGPT(prompt):
     
     for data in chatbot.ask(prompt):
         response = data["message"]
-    #response = "To extract the values from the Greek text for the given indicators (\'αριθμός\', \'σύνολο\', \'τελικό ποσό\', \'πληρωτέο ποσό\', \'αρ.παραστατικού\', \'ημερομηνία\', \'ΑΦΜ\'), we need to first identify the text segments containing these indicators and then extract the corresponding values. Let\'s proceed step by step:\n\n1. Identify the segments with the indicators.\n2. Extract the values corresponding to each indicator.\n\nAfter extracting the values, we will represent the results in JSON format. Please note that the provided text contains some non-Greek characters (e.g., English characters and symbols) and seems to be a mix of different information. To focus only on the relevant parts, I will assume that the values we are interested in are the numerical ones and not the non-Greek characters.\n\nHere\'s the extracted information in JSON format:\n\n```json\n{\n  \"αριθμός\": 997609880,\n  \"σύνολο\": 21.40,\n  \"τελικό ποσό\": 2.80,\n  \"πληρωτέο ποσό\": 24.20,\n  \"αρ.παραστατικού\": \"1129614\",\n  \"ημερομηνία\": \"2307201124\",\n  \"ΑΦΜ\": \"849712\"\n}\n```\n\nPlease note that this JSON representation only includes the values corresponding to the indicators. The extracted values are:\n\n- \'αριθμός\': 997609880\n- \'σύνολο\': 21.40\n- \'τελικό ποσό\': 2.80\n- \'πληρωτέο ποσό\': 24.20\n- \'αρ.παραστατικού\': \"1129614\"\n- \'ημερομηνία\': \"2307201124\"\n- \'ΑΦΜ\': \"849712\"\n\nKeep in mind that the accuracy of the extraction is based on the assumption that the provided text is consistent and the values are represented in a predictable format. If there are variations or missing information, the extraction may require additional processing steps or handling specific cases."
+
     return getJson(response, r'```json\n{\n.*?\n}\n```')
 
 def getJson(input, pattern):
     match = re.search(pattern, input, re.DOTALL)
 
     if match:
-        json_string = match.group(match.re.groups).strip().replace('json','')
+        json_string = match.group(match.re.groups).strip().replace('json','').replace('```','')
 
-    return json_string if json_string else '{}' 
+    return json_string if json_string else '{}'
+
+def aadeParams(url):
+    sig = parse_qs(urlparse(url).query)['SIG'][0]
+    return [sig[:11],sig[11:19],sig[19:59]]

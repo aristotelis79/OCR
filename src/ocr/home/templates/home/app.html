@@ -13,33 +13,35 @@
       <form method="post" enctype="multipart/form-data" onsubmit="openLoader()">
           {% csrf_token %}
           <div class="row">
-          <div class="col-12 mb-5">
-            <label for="invoice" class="form-label"></label>
-            <input class="form-control" placeholder="file input" type="file" name="invoice" accept=".jpg, .jpeg, .png" /> 
-            <input type="hidden" name="prompt_keys" value="'αριθμός','σύνολο','τελικό ποσό','πληρωτέο ποσό','αρ.παραστατικού','ημερομηνία','ΑΦΜ'" />
-            <input type="hidden" name="prompt"
-              value="Attempt to find and extract the values form the indicators ({}) from the Greek text as comprehensively as possible, then provide the results in JSON format containing only the values" />
+            <div class="col-12 mb-5">
+              <label for="invoice" class="form-label"></label>
+              <input class="form-control" placeholder="file input" type="file" name="invoice" accept=".jpg, .jpeg, .png" /> 
+              <input type="hidden" name="prompt_keys" value="'αριθμός','σύνολο','τελικό ποσό','πληρωτέο ποσό','αρ.παραστατικού','ημερομηνία','ΑΦΜ'" />
+              <input type="hidden" name="prompt"
+                value="Attempt to find and extract the values form the indicators ({}) from the Greek text as comprehensively as possible, then provide the results in JSON format containing only the values" />
+            </div>
           </div>
           <div class="row">
-          <div class="col-12 mb-5">
-            <div class="form-floating">
-              <textarea class="form-control" placeholder="Json date" name="extra_prompts" style="height: 2em"></textarea>
-              <label for="extra_prompts" class="form-label">Add extra comma seperate fields to get values</label>
+            <div class="col-12 mb-5">
+              <div class="form-floating">
+                <textarea class="form-control" placeholder="Json date" name="extra_prompts" style="height: 2em"></textarea>
+                <label for="extra_prompts" class="form-label">Add extra comma seperate fields to get values</label>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-12 mb-5 text-end">
-            <button name="textreq" class="btn btn-success" type="submit">Text Recognize</button>
-            <button name= "qrcode" class="btn btn-success" type="submit">QRCode</button>
-            <div id="loadingModal" style="display: none;">
-              <button type="button" class="btn btn-primary" disabled>
-                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
-                Loading...
-              </button>
+          <div class="row">
+            <div class="col-12 mb-5 text-end">
+              <button name= "qrcode" class="btn btn-success" type="submit">QRCode Recognize</button>
+              &nbsp&nbsp&nbsp&nbsp
+              <button name="textreq" class="btn btn-secondary" type="submit">Text Recognize</button>
+              <div id="loadingModal" style="display: none;">
+                <button type="button" class="btn btn-primary" disabled>
+                  <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                  Loading...
+                </button>
+              </div>
             </div>
           </div>
-        </div>
       </form>
       <div class="row">
         <div class="col-12 mb-5">
@@ -49,6 +51,11 @@
           </div>
         </div>
     </div>
+    <div class="row">
+      <div class="col-12 mb-5 text-end">
+        <button type="button" class="btn btn-info" onclick="prettyJson()">Pretty Json</button>
+      </div>
+    </div>
 </div> 
 <script>
     function openLoader(btn) {
@@ -56,5 +63,9 @@
         document.getElementsByName("qrcode")[0].style.display = "none";
         document.getElementById("loadingModal").style.display = "block";
       }
+    function prettyJson(){
+      var json_data = 
+      document.getElementsByName('json_data')[0].value =  JSON.stringify(JSON.parse(document.getElementsByName('json_data')[0].value), undefined, 4);
+    }
 </script>
 {% endblock %}
