@@ -10,21 +10,21 @@
       <div class="text-start">
         <h5>Add an invoice</h5>
       </div>
-      <form method="post" enctype="multipart/form-data" onsubmit="openLoader(this)">
+      <form method="post" enctype="multipart/form-data" onsubmit="openLoader()">
           {% csrf_token %}
           <div class="row">
           <div class="col-12 mb-5">
             <label for="invoice" class="form-label"></label>
             <input class="form-control" placeholder="file input" type="file" name="invoice" accept=".jpg, .jpeg, .png" /> 
-            <input type="hidden" name="promt_keys" value="'αριθμός','σύνολο','πληρωτέο ποσό','αρ.παραστατικού','ημερομηνία','ΑΦΜ'" />
-            <input type="hidden" name="promt"
+            <input type="hidden" name="prompt_keys" value="'αριθμός','σύνολο','τελικό ποσό','πληρωτέο ποσό','αρ.παραστατικού','ημερομηνία','ΑΦΜ'" />
+            <input type="hidden" name="prompt"
               value="Attempt to find and extract the values form the indicators ({}) from the Greek text as comprehensively as possible, then provide the results in JSON format containing only the values" />
           </div>
           <div class="row">
           <div class="col-12 mb-5">
             <div class="form-floating">
-              <textarea class="form-control" placeholder="Json date" name="extra_promts" style="height: 2em"></textarea>
-              <label for="extra_promts" class="form-label">Add extra comma seperate fields to get values</label>
+              <textarea class="form-control" placeholder="Json date" name="extra_prompts" style="height: 2em"></textarea>
+              <label for="extra_prompts" class="form-label">Add extra comma seperate fields to get values</label>
             </div>
           </div>
         </div>

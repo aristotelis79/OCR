@@ -7,4 +7,5 @@ opencv-contrib-python
 numpy
 pytesseract
 qreader
+revChatGPT
 bardapi

@@ -4,15 +4,11 @@ import bardapi
 import re
 import os 
 import numpy as np
-#from imutils import perspective
-#from rembg.bg import remove as rembg
-from django.http import FileResponse
 from django.shortcuts import render
-from io import BytesIO
 from qrdet import QRDetector
-from qreader import QReader 
+from qreader import QReader
+from revChatGPT.V1 import Chatbot
 #from PIL import Image
-
 
 def home(request):
     if 'qrcode' in request.POST:
@@ -41,7 +37,6 @@ def qrcode(request):
 
     return render(request, "home/app.html", {'json_data': decoded_code})
 
-
 def textreq(request):
     if request.method != 'POST' or request.FILES.get('invoice', None) is None :
         return render(request, "home/app.html", {'json_data': 'Not valid request'})
@@ -50,23 +45,35 @@ def textreq(request):
     image = cv2.imdecode(np.fromstring(request.FILES['invoice'].read(), np.uint8), cv2.IMREAD_UNCHANGED)
     text = pytesseract.image_to_string(image, config= r'-l ell+eng --psm 6')
         
-    promt_keys = request.POST.get('promt_keys')
-    extra_promts = request.POST.get('extra_promts')
-    if(extra_promts):
-        promt_keys += ","+ extra_promts 
+    prompt_keys = request.POST.get('prompt_keys')
+    extra_prompts = request.POST.get('extra_prompts')
+    if extra_prompts:
+        prompt_keys += ","+ extra_prompts 
 
-    promt = request.POST.get('promt').format(promt_keys)
-    promt += "'" + text + "'"
-    response = bardapi.core.Bard(os.environ.get('BARD1PSID')).get_answer(promt)
+    prompt = request.POST.get('prompt').format(prompt_keys)
+    prompt += "'" + text + "'"
 
-    return render(request, "home/app.html", {'json_data': getJson(response['content'])})
+    return render(request, "home/app.html", {'json_data': bard(prompt)})
     
+def bard(prompt):
+    response = bardapi.core.Bard(os.environ.get('BARD1PSID')).get_answer(prompt)
+    
+    return getJson(response['content'], r'```(.*?)```')
 
-def getJson(input):
-    pattern = r'```(.*?)```'
+def chatGPT(prompt):
+    chatbot = Chatbot(config={
+      "access_token": os.environ.get('CHATGPT')
+    })
+    
+    for data in chatbot.ask(prompt):
+        response = data["message"]
+    #response = "To extract the values from the Greek text for the given indicators (\'αριθμός\', \'σύνολο\', \'τελικό ποσό\', \'πληρωτέο ποσό\', \'αρ.παραστατικού\', \'ημερομηνία\', \'ΑΦΜ\'), we need to first identify the text segments containing these indicators and then extract the corresponding values. Let\'s proceed step by step:\n\n1. Identify the segments with the indicators.\n2. Extract the values corresponding to each indicator.\n\nAfter extracting the values, we will represent the results in JSON format. Please note that the provided text contains some non-Greek characters (e.g., English characters and symbols) and seems to be a mix of different information. To focus only on the relevant parts, I will assume that the values we are interested in are the numerical ones and not the non-Greek characters.\n\nHere\'s the extracted information in JSON format:\n\n```json\n{\n  \"αριθμός\": 997609880,\n  \"σύνολο\": 21.40,\n  \"τελικό ποσό\": 2.80,\n  \"πληρωτέο ποσό\": 24.20,\n  \"αρ.παραστατικού\": \"1129614\",\n  \"ημερομηνία\": \"2307201124\",\n  \"ΑΦΜ\": \"849712\"\n}\n```\n\nPlease note that this JSON representation only includes the values corresponding to the indicators. The extracted values are:\n\n- \'αριθμός\': 997609880\n- \'σύνολο\': 21.40\n- \'τελικό ποσό\': 2.80\n- \'πληρωτέο ποσό\': 24.20\n- \'αρ.παραστατικού\': \"1129614\"\n- \'ημερομηνία\': \"2307201124\"\n- \'ΑΦΜ\': \"849712\"\n\nKeep in mind that the accuracy of the extraction is based on the assumption that the provided text is consistent and the values are represented in a predictable format. If there are variations or missing information, the extraction may require additional processing steps or handling specific cases."
+    return getJson(response, r'```json\n{\n.*?\n}\n```')
+
+def getJson(input, pattern):
     match = re.search(pattern, input, re.DOTALL)
 
     if match:
-        json_string = match.group(1).strip().replace('json','')
-    
+        json_string = match.group(match.re.groups).strip().replace('json','')
+
     return json_string if json_string else '{}' 
