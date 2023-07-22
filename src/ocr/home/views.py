@@ -1,6 +1,6 @@
 import pytesseract
 import cv2
-import bardapi
+#import bardapi
 import re
 import os
 import requests
@@ -37,7 +37,7 @@ def qrcode(request):
     image = cv2.cvtColor(qr_image, cv2.COLOR_BGR2RGB)
     decoded_code = qreader.detect_and_decode(image=image)
     
-    if len(decoded_code) is 0:
+    if len(decoded_code) == 0:
         return render(request, "home/app.html", {'json_data': ''})
 
     urlParams = aadeParams(decoded_code[0])
@@ -60,12 +60,12 @@ def textreq(request):
     prompt = request.POST.get('prompt').format(prompt_keys)
     prompt += "'" + text + "'"
 
-    return render(request, "home/app.html", {'json_data': bard(prompt)})
+    return render(request, "home/app.html", {'json_data': chatGPT(prompt)})
     
-def bard(prompt):
-    response = bardapi.core.Bard(os.environ.get('BARD1PSID')).get_answer(prompt)
+# def bard(prompt):
+#     response = bardapi.core.Bard(os.environ.get('BARD1PSID')).get_answer(prompt)
     
-    return getJson(response['content'], r'```(.*?)```')
+#     return getJson(response['content'], r'```(.*?)```')
 
 def chatGPT(prompt):
     chatbot = Chatbot(config={

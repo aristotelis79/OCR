@@ -3,15 +3,15 @@
 FROM python:3
  
 RUN apt-get update && apt-get install -y \
-libzbar0 libgl1 libgl1-mesa-glx ffmpeg libsm6 libxext6 libsm6 libfontconfig1 libxrender1 python3-opencv \
+libzbar0 libgl1 libgl1-mesa-glx ffmpeg libsm6 libxext6 libsm6 libfontconfig1 libxrender1 \
 libtesseract-dev libleptonica-dev pkg-config tesseract-ocr tesseract-ocr-grc tesseract-ocr-ell \
 && \
 apt-get clean && \
 rm -rf /var/lib/apt/lists/*
 
-ARG BARD1PSID
+#ARG BARD1PSID
+#ENV BARD1PSID=$BARD1PSID
 ARG CHATGPT
-ENV BARD1PSID=$BARD1PSID
 ENV CHATGPT=$CHATGPT
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
