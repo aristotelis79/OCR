@@ -56,6 +56,13 @@
         <button type="button" class="btn btn-info" onclick="prettyJson()">Pretty Json</button>
       </div>
     </div>
+    <div id="invoice_preview" class="row">
+      <div class="col-12 mb-5 text-end">
+        {% if invoice_preview %}
+          <img src="{{ invoice_preview }}" alt="Uploaded Image Preview">
+        {% endif %}
+      </div>
+    </div>
 </div> 
 <script>
     function openLoader(btn) {
