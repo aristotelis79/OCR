@@ -9,6 +9,14 @@ libtesseract-dev libleptonica-dev pkg-config tesseract-ocr tesseract-ocr-grc tes
 apt-get clean && \
 rm -rf /var/lib/apt/lists/*
 
+WORKDIR /app
+
+COPY requirements.txt /app
+
+RUN pip install -r requirements.txt
+
+COPY . /app
+
 #ARG BARD1PSID
 #ENV BARD1PSID=$BARD1PSID
 ARG CHATGPT
@@ -18,14 +26,6 @@ ENV PYTHONUNBUFFERED=1
 
 #EXPOSE 5678
 EXPOSE 8000
-
-WORKDIR /app
-
-COPY requirements.txt /app
-
-RUN pip install -r requirements.txt
-
-COPY . /app
 
 ENTRYPOINT ["python3"]
 
